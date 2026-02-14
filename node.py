@@ -6,3 +6,7 @@ class SearchNode:
         self.cost_so_far = cost_so_far
         self.heuristic_value = heuristic_value
         self.total_cost = cost_so_far + heuristic_value
+
+    def __lt__(self, other):
+        return self.total_cost < other.total_cost
+    
