@@ -126,4 +126,59 @@ class SearchAlgos:
 
 
    
-    
+    def astar_misplaced(self):
+
+        self.visited.clear()
+        self.expanded_count = 0
+        self.largest_frontier = 1
+
+        def misplaced_tiles(state):
+            return sum(
+                1 for i in range(len(self.goal_state))
+                if state[i] != 0 and state[i] != self.goal_state[i]
+            )
+
+        start_node = SearchNode(
+            current_state=self.start_state,
+            cost_so_far=0,
+            heuristic_value=misplaced_tiles(self.start_state)
+        )
+
+        frontier = [start_node]
+        heapq.heapify(frontier)
+
+        while frontier:
+
+            self.largest_frontier = max(self.largest_frontier, len(frontier))
+            node = heapq.heappop(frontier)
+            self.expanded_count += 1
+
+            board = node.current_state
+            g = node.cost_so_far
+            h = node.heuristic_value
+
+            print(f"Expanding node with g(n)={g} and h(n)={h}")
+
+            for i in range(0, len(board), 3):
+                print(board[i:i+3])
+
+            if self.problem.is_goal(board):
+                stats = {
+                    "nodes_expanded": self.expanded_count,
+                    "max_queue_size": self.largest_frontier,
+                    "depth": g
+                }
+                return node, stats
+
+            self.visited.add(board)
+
+            for move, new_state in self.problem.get_successors(board):
+                if new_state not in self.visited:
+                    child = SearchNode(
+                        current_state=new_state,
+                        previous_node=node,
+                        move=move,
+                        cost_so_far=g + 1,
+                        heuristic_value=misplaced_tiles(new_state)
+                    )
+                    heapq.heappush(frontier, child)
