@@ -34,4 +34,31 @@ class Problem:
             except ValueError:
                 print("Invalid input. Please ensure all entries are valid integers.")
 
-    
+    def is_goal(self, state):
+        return state == self.goal_state
+
+    def get_successors(self, state):
+        successors = []
+        index = state.index(0)
+        row, col = divmod(index, 3)
+
+        moves = {
+            'up': (row - 1, col),
+            'down': (row + 1, col),
+            'left': (row, col - 1),
+            'right': (row, col + 1)
+        }
+
+        for action, (r, c) in moves.items():
+            if 0 <= r < 3 and 0 <= c < 3:
+                new_index = r * 3 + c
+                new_state = list(state)
+
+                new_state[index], new_state[new_index] = new_state[new_index], new_state[index]
+                successors.append((action, tuple(new_state)))
+
+        return successors
+
+    @staticmethod
+    def get_trace_puzzle():
+        return (1, 0, 3, 4, 2, 6, 7, 5, 8)
